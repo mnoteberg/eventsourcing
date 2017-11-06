@@ -7,12 +7,14 @@ public class Account {
     private String customerName;
     private String email;
     private int balance;
+    private Status status;
 
     public Account(String accountId, String customerName, String email) {
         this.accountId = accountId;
         this.customerName = customerName;
         this.email = email;
         this.balance = 0;
+        this.status = Status.ACTIVE;
     }
 
     public String getAccountId() {
@@ -35,6 +37,14 @@ public class Account {
         this.balance = balance;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -42,6 +52,7 @@ public class Account {
                 .append("customerName", customerName)
                 .append("email", email)
                 .append("balance", balance)
+                .append("status", status)
                 .toString();
     }
 }

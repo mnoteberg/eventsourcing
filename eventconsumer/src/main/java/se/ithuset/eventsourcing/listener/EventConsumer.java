@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import se.bank.event.AccountClosed;
 import se.bank.event.AccountCreated;
 import se.bank.event.EventType;
 import se.bank.event.MoneyDeposited;
@@ -37,6 +38,9 @@ public class EventConsumer {
                 break;
             case MONEY_WITHDRAWN:
                 service.withdrawMoney(objectMapper.readValue((String) consumerRecord.value(), MoneyWithdrawn.class));
+                break;
+            case ACCOUNT_CLOSED:
+                service.closeAccount(objectMapper.readValue((String) consumerRecord.value(), AccountClosed.class));
                 break;
         }
     }
