@@ -1,0 +1,14 @@
+spring:
+#    datasource:
+#        driver-class-name: org.sqlite.JDBC
+#        password: ''
+#        url: jdbc:sqlite:app.db
+#        username: ''
+#    jpa:
+#        properties:
+#            hibernate:
+#                dialect: org.hibernate.dialect.SQLiteDialect
+    kafka:
+      bootstrap-servers: localhost:32770
+      consumer:
+        group-id: test
