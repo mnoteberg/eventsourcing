@@ -4,5 +4,4 @@ spring:
       consumer:
         group-id: test
 server:
-  context-path: /Kafka
   port: 9090

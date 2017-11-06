@@ -24,24 +24,36 @@ public class BankService {
     }
 
     public void depositMoney(MoneyDeposited moneyDeposited) {
-        Account account = repository.getAccount(moneyDeposited.getAccountId());
+        Account account = getAccount(moneyDeposited.getAccountId());
         account.setBalance(account.getBalance() + moneyDeposited.getAmount());
         repository.updateAccount(account);
     }
 
     public void withdrawMoney(MoneyWithdrawn moneyWithdrawn) {
-        Account account = repository.getAccount(moneyWithdrawn.getAccountId());
+        Account account = getAccount(moneyWithdrawn.getAccountId());
         account.setBalance(account.getBalance() - moneyWithdrawn.getAmount());
         repository.updateAccount(account);
     }
 
     public void closeAccount(AccountClosed accountClosed) {
-        Account account = repository.getAccount(accountClosed.getAccountId());
+        Account account = getAccount(accountClosed.getAccountId());
         if (account.getBalance() == 0) {
             account.setStatus(Status.INACTIVE);
             repository.updateAccount(account);
         } else {
             throw new IllegalStateException("Non-zero balanace: " + account.getBalance());
         }
+    }
+
+    public int getBalance(String accountId) {
+        return getAccount(accountId).getBalance();
+    }
+
+    private Account getAccount(String accountId) {
+        Account account = repository.getAccount(accountId);
+        if (account == null) {
+            throw new IllegalStateException("Account does not exist: " + accountId);
+        }
+        return account;
     }
 }
