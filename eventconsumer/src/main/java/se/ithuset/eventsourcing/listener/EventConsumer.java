@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import se.bank.event.AccountCreated;
 import se.bank.event.EventType;
 import se.bank.event.MoneyDeposited;
+import se.bank.event.MoneyWithdrawn;
 import se.ithuset.eventsourcing.service.BankService;
 
 import java.io.IOException;
@@ -33,6 +34,9 @@ public class EventConsumer {
                 break;
             case MONEY_DEPOSITED:
                 service.depositMoney(objectMapper.readValue((String) consumerRecord.value(), MoneyDeposited.class));
+                break;
+            case MONEY_WITHDRAWN:
+                service.withdrawMoney(objectMapper.readValue((String) consumerRecord.value(), MoneyWithdrawn.class));
                 break;
         }
     }

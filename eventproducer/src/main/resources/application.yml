@@ -1,6 +1,6 @@
 spring:
   kafka:
-      bootstrap-servers: localhost:32770
+      bootstrap-servers: localhost:32768
       consumer:
         group-id: test
 server:
