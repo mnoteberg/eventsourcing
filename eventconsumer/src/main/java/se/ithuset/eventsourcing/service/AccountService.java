@@ -1,5 +1,6 @@
 package se.ithuset.eventsourcing.service;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 import se.bank.event.AccountClosed;
 import se.bank.event.AccountCreated;
@@ -20,7 +21,8 @@ public class AccountService {
     }
 
     public void createAccount(AccountCreated event) {
-        repository.updateAccount(new Account(UUID.randomUUID().toString(), event.getCustomerName(), event.getEmail()));
+        String accountId = String.valueOf(RandomUtils.nextInt(1, 1000));
+        repository.updateAccount(new Account(accountId, event.getCustomerName(), event.getEmail()));
     }
 
     public Account get(String accountId) {
