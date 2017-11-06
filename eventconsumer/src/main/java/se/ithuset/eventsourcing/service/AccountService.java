@@ -7,20 +7,24 @@ import se.bank.event.MoneyDeposited;
 import se.bank.event.MoneyWithdrawn;
 import se.ithuset.eventsourcing.model.Account;
 import se.ithuset.eventsourcing.model.Status;
-import se.ithuset.eventsourcing.repository.BankRepository;
+import se.ithuset.eventsourcing.repository.AccountRepository;
 
 import java.util.UUID;
 
 @Service
-public class BankService {
-    private BankRepository repository;
+public class AccountService {
+    private AccountRepository repository;
 
-    public BankService(BankRepository repository) {
+    public AccountService(AccountRepository repository) {
         this.repository = repository;
     }
 
     public void createAccount(AccountCreated event) {
         repository.updateAccount(new Account(UUID.randomUUID().toString(), event.getCustomerName(), event.getEmail()));
+    }
+
+    public Account get(String accountId) {
+        return getAccount(accountId);
     }
 
     public void depositMoney(MoneyDeposited moneyDeposited) {

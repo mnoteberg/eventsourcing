@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class BankRepository {
+public class AccountRepository {
     private static final Map<String, Account> store = new HashMap<>();
 
     public void updateAccount(Account account) {
