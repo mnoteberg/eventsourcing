@@ -26,8 +26,7 @@ public class AccountService {
     }
 
     public void createAccount(AccountCreated event) {
-        String accountId = String.valueOf(RandomUtils.nextInt(1, 1000));
-        repository.updateAccount(new Account(accountId, event.getCustomerName(), event.getEmail()));
+        repository.updateAccount(new Account(event.getAccountId(), event.getCustomerName(), event.getEmail()));
     }
 
     public Account get(String accountId) {

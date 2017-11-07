@@ -30,7 +30,7 @@ public class EventService {
     }
 
     public void createAccount(CreateAccountCommand command) throws JsonProcessingException {
-        AccountCreated accountCreated = new AccountCreated(command.getCustomerName(), command.getEmail());
+        AccountCreated accountCreated = new AccountCreated(command.getAccountId(), command.getCustomerName(), command.getEmail());
         producer.send(EventType.ACCOUNT_CREATED, objectMapper.writeValueAsString(accountCreated));
     }
 

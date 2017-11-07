@@ -4,13 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CreateAccountCommand {
+    private String accountId;
     private String customerName;
     private String email;
 
     @JsonCreator
-    public CreateAccountCommand(@JsonProperty("customerName") String customerName, @JsonProperty("email") String email) {
+    public CreateAccountCommand(@JsonProperty("accountId") String accountId, @JsonProperty("customerName") String customerName, @JsonProperty("email") String email) {
+        this.accountId = accountId;
         this.customerName = customerName;
         this.email = email;
+    }
+
+    public String getAccountId() {
+        return accountId;
     }
 
     public String getCustomerName() {
@@ -24,7 +30,8 @@ public class CreateAccountCommand {
     @Override
     public String toString() {
         return "CreateAccountCommand{" +
-                "customerName='" + customerName + '\'' +
+                "accountId='" + accountId + '\'' +
+                ", customerName='" + customerName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
