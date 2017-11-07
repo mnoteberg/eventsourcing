@@ -1,6 +1,6 @@
 package se.ithuset.eventsourcing.consumer.service;
 
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.kafka.common.metrics.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.bank.event.AccountClosed;
@@ -9,6 +9,7 @@ import se.bank.event.MoneyDeposited;
 import se.bank.event.MoneyWithdrawn;
 import se.ithuset.eventsourcing.consumer.model.Account;
 import se.ithuset.eventsourcing.consumer.model.Status;
+import se.ithuset.eventsourcing.consumer.model.TransactionType;
 import se.ithuset.eventsourcing.consumer.repository.AccountRepository;
 
 import java.time.LocalDateTime;
@@ -26,32 +27,44 @@ public class AccountService {
     }
 
     public void createAccount(AccountCreated event) {
-        repository.updateAccount(new Account(event.getAccountId(), event.getCustomerName(), event.getEmail()));
+        if (!repository.exists(event.getAccountId())) {
+            repository.updateAccount(new Account(event.getAccountId(), event.getCustomerName(), event.getEmail()));
+        }
     }
 
     public Account get(String accountId) {
         return getAccount(accountId);
     }
 
-    public void depositMoney(MoneyDeposited moneyDeposited) {
-        Account account = getAccount(moneyDeposited.getAccountId());
-        account.setBalance(account.getBalance() + moneyDeposited.getAmount());
-        repository.updateAccount(account);
+    public void depositMoney(MoneyDeposited moneyDeposited, LocalDateTime timestamp) {
+        if (!transactionService.exists(moneyDeposited.getAccountId(), TransactionType.DEPOSIT, timestamp)) {
+            Account account = getAccount(moneyDeposited.getAccountId());
+            if (!Status.INACTIVE.equals(account.getStatus())) {
+                account.setBalance(account.getBalance() + moneyDeposited.getAmount());
+                repository.updateAccount(account);
+                transactionService.depositMoney(moneyDeposited, timestamp);
+            }
+        }
     }
 
-    public void withdrawMoney(MoneyWithdrawn moneyWithdrawn) {
-        Account account = getAccount(moneyWithdrawn.getAccountId());
-        account.setBalance(account.getBalance() - moneyWithdrawn.getAmount());
-        repository.updateAccount(account);
+    public void withdrawMoney(MoneyWithdrawn moneyWithdrawn, LocalDateTime timestamp) {
+        if (!transactionService.exists(moneyWithdrawn.getAccountId(), TransactionType.WITHDRAWAL, timestamp)) {
+            Account account = getAccount(moneyWithdrawn.getAccountId());
+            account.setBalance(account.getBalance() - moneyWithdrawn.getAmount());
+            repository.updateAccount(account);
+            transactionService.withdrawMoney(moneyWithdrawn, timestamp);
+        }
     }
 
     public void closeAccount(AccountClosed accountClosed) {
-        Account account = getAccount(accountClosed.getAccountId());
-        if (account.getBalance() == 0) {
-            account.setStatus(Status.INACTIVE);
-            repository.updateAccount(account);
-        } else {
-            throw new IllegalStateException("Non-zero balanace: " + account.getBalance());
+        Account account = repository.getAccount(accountClosed.getAccountId());
+        if (account != null && !Status.INACTIVE.equals(account.getStatus())) {
+            if (account.getBalance() == 0) {
+                account.setStatus(Status.INACTIVE);
+                repository.updateAccount(account);
+            } else {
+                throw new IllegalStateException("Non-zero balanace: " + account.getBalance());
+            }
         }
     }
 

@@ -24,4 +24,8 @@ public class AccountRepository {
     public List<Account> findAll() {
         return new ArrayList<>(store.values());
     }
+
+    public boolean exists(String accountId) {
+        return store.containsKey(accountId);
+    }
 }

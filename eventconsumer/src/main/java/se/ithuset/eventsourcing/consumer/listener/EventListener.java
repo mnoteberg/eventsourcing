@@ -13,7 +13,6 @@ import se.bank.event.EventType;
 import se.bank.event.MoneyDeposited;
 import se.bank.event.MoneyWithdrawn;
 import se.ithuset.eventsourcing.consumer.service.AccountService;
-import se.ithuset.eventsourcing.consumer.service.TransactionService;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -25,16 +24,13 @@ import java.util.Map;
 public class EventListener implements ConsumerSeekAware {
     private AccountService accountService;
 
-    private TransactionService transactionService;
-
     private ObjectMapper objectMapper;
 
     private ConsumerSeekCallback callback;
 
     @Autowired
-    public EventListener(AccountService accountService, TransactionService transactionService, ObjectMapper objectMapper) {
+    public EventListener(AccountService accountService, ObjectMapper objectMapper) {
         this.accountService = accountService;
-        this.transactionService = transactionService;
         this.objectMapper = objectMapper;
     }
 
@@ -50,13 +46,11 @@ public class EventListener implements ConsumerSeekAware {
                 break;
             case MONEY_DEPOSITED:
                 MoneyDeposited moneyDeposited = objectMapper.readValue((String) consumerRecord.value(), MoneyDeposited.class);
-                accountService.depositMoney(moneyDeposited);
-                transactionService.depositMoney(moneyDeposited, timestamp);
+                accountService.depositMoney(moneyDeposited, timestamp);
                 break;
             case MONEY_WITHDRAWN:
                 MoneyWithdrawn moneyWithdrawn = objectMapper.readValue((String) consumerRecord.value(), MoneyWithdrawn.class);
-                accountService.withdrawMoney(moneyWithdrawn);
-                transactionService.withdrawMoney(moneyWithdrawn, timestamp);
+                accountService.withdrawMoney(moneyWithdrawn, timestamp);
                 break;
             case ACCOUNT_CLOSED:
                 accountService.closeAccount(objectMapper.readValue((String) consumerRecord.value(), AccountClosed.class));

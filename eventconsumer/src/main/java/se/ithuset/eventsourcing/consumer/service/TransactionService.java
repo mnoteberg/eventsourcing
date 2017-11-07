@@ -42,5 +42,9 @@ public class TransactionService {
         Transaction transaction = new Transaction(timestamp, TransactionType.INTEREST, amount);
         repository.add(accountId, transaction);
     }
+
+    public boolean exists(String accountId, TransactionType type, LocalDateTime timestamp) {
+        return repository.exists(accountId, type, timestamp);
+    }
 }
 
