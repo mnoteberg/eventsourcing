@@ -1,6 +1,7 @@
 package se.ithuset.eventsourcing.service;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.bank.event.AccountClosed;
 import se.bank.event.AccountCreated;
@@ -10,14 +11,18 @@ import se.ithuset.eventsourcing.model.Account;
 import se.ithuset.eventsourcing.model.Status;
 import se.ithuset.eventsourcing.repository.AccountRepository;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AccountService {
     private AccountRepository repository;
+    private TransactionService transactionService;
 
-    public AccountService(AccountRepository repository) {
+    @Autowired
+    public AccountService(AccountRepository repository, TransactionService transactionService) {
         this.repository = repository;
+        this.transactionService = transactionService;
     }
 
     public void createAccount(AccountCreated event) {
@@ -61,5 +66,16 @@ public class AccountService {
             throw new IllegalStateException("Account does not exist: " + accountId);
         }
         return account;
+    }
+
+    public void calculateInterest(LocalDateTime timestamp) {
+        repository.findAll().stream()
+                .map(Account::calculateInterest)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(p -> {
+                    repository.updateAccount(p.getLeft());
+                    transactionService.interest(p.getLeft().getAccountId(), p.getRight(), timestamp);
+                });
     }
 }

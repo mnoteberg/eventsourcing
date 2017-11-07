@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.bank.event.AccountClosed;
+import se.bank.event.AccountCreated;
 import se.bank.event.EventType;
+import se.bank.event.InterestCalculated;
 import se.bank.event.MoneyDeposited;
 import se.bank.event.MoneyWithdrawn;
 import se.ithuset.eventsourcing.model.CreateAccountCommand;
 import se.ithuset.eventsourcing.producer.EventProducer;
-import se.bank.event.AccountCreated;
 
 @Service
 public class EventService {
@@ -52,6 +53,10 @@ public class EventService {
         }
         AccountClosed accountClosed = new AccountClosed(accountId);
         producer.send(EventType.ACCOUNT_CLOSED, objectMapper.writeValueAsString(accountClosed));
+    }
+
+    public void calculateInterest() throws JsonProcessingException {
+        producer.send(EventType.INTEREST_CALCULATED, objectMapper.writeValueAsString(new InterestCalculated()));
     }
 
     private int getBalance(String accountId) {

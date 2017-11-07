@@ -1,6 +1,9 @@
 package se.ithuset.eventsourcing.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Optional;
 
 public class Account {
     private String accountId;
@@ -8,6 +11,7 @@ public class Account {
     private String email;
     private int balance;
     private Status status;
+    private Double interestRate;
 
     public Account(String accountId, String customerName, String email) {
         this.accountId = accountId;
@@ -15,6 +19,7 @@ public class Account {
         this.email = email;
         this.balance = 0;
         this.status = Status.ACTIVE;
+        this.interestRate = 0.10d;
     }
 
     public String getAccountId() {
@@ -43,6 +48,16 @@ public class Account {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Optional<Pair<Account, Integer>> calculateInterest() {
+        if (interestRate != null && interestRate > 0) {
+            Double interest = balance * interestRate;
+            balance += interest.intValue();
+            return Optional.of(Pair.of(this, interest.intValue()));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

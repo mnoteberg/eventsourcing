@@ -33,10 +33,14 @@ public class TransactionService {
     }
 
     public List<Transaction> get(String accountId) {
-
         return repository.get(accountId).stream()
                 .sorted(Comparator.comparing(Transaction::getTimestamp).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public void interest(String accountId, Integer amount, LocalDateTime timestamp) {
+        Transaction transaction = new Transaction(timestamp, TransactionType.INTEREST, amount);
+        repository.add(accountId, transaction);
     }
 }
 

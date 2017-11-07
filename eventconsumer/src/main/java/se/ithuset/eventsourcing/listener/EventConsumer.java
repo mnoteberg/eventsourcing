@@ -56,6 +56,9 @@ public class EventConsumer {
             case ACCOUNT_CLOSED:
                 accountService.closeAccount(objectMapper.readValue((String) consumerRecord.value(), AccountClosed.class));
                 break;
+            case INTEREST_CALCULATED:
+                accountService.calculateInterest(timestamp);
+                break;
         }
     }
 }
